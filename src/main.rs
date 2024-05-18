@@ -23,6 +23,8 @@ impl EventHandler for Handler {
 
 #[tokio::main]
 async fn main() {
+    println!("Copyright (c) 2024 HauC3\n\nLicensed under the Blue Oak Model License 1.0.0 (see https://blueoakcouncil.org/license/1.0.0 for details)\n\n");
+
     let token = std::env::var("DISCORD_TOKEN").expect("missing DISCORD_TOKEN");
     let intents = serenity::GatewayIntents::non_privileged();
 
