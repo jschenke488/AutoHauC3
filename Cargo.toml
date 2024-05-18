@@ -3,6 +3,7 @@ name = "AutoHauC3"
 version = "0.1.0"
 authors = ["HauC3 <staff@hauc3.net>"]
 edition = "2021"
+license = "BlueOak-1.0.0"
 
 [dependencies.poise]
 version = "0.6.1"
