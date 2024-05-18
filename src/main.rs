@@ -1,3 +1,4 @@
+use dotenv::dotenv;
 use poise::serenity_prelude as serenity;
 use serenity::async_trait;
 use serenity::model::gateway::Ready;
@@ -23,9 +24,10 @@ impl EventHandler for Handler {
 
 #[tokio::main]
 async fn main() {
+    dotenv().ok();
     println!("Copyright (c) 2024 HauC3\n\nLicensed under the Blue Oak Model License 1.0.0 (see https://blueoakcouncil.org/license/1.0.0 for details)\n\n");
 
-    let token = std::env::var("DISCORD_TOKEN").expect("missing DISCORD_TOKEN");
+    let token = std::env::var("DISCORD_TOKEN").expect("missing DISCORD_TOKEN environment variable. use a .env file or set this variable in a script.");
     let intents = serenity::GatewayIntents::non_privileged();
 
     let framework = poise::Framework::builder()
