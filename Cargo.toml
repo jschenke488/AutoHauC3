@@ -1,0 +1,15 @@
+[package]
+name = "AutoHauC3"
+version = "0.1.0"
+authors = ["HauC3 <staff@hauc3.net>"]
+edition = "2021"
+
+[dependencies.poise]
+version = "0.6.1"
+
+[dependencies.serenity]
+version = "0.12"
+
+[dependencies.tokio]
+version = "1.21.2"
+features = ["macros", "rt-multi-thread"]
