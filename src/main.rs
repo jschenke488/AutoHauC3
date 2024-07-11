@@ -1,6 +1,6 @@
 use dotenv::dotenv;
 use poise::serenity_prelude as serenity;
-use poise::serenity_prelude::{UserId, RoleId};
+use poise::serenity_prelude::{RoleId, UserId};
 use serenity::async_trait;
 use serenity::model::gateway::Ready;
 use serenity::prelude::{Context, EventHandler};
@@ -16,19 +16,40 @@ async fn op(
     #[description = "User"] user: poise::serenity_prelude::Member,
 ) -> Result<(), Error> {
     let mut has_op = false;
-    if ctx.author_member().await.ok_or("fuck you 1")?.roles(ctx.cache()).expect("fuck you 2").contains(ctx.guild().unwrap().role_by_name("Operator").expect("fuck you 3")) {
+    if ctx
+        .author_member()
+        .await
+        .ok_or("Could not get member")?
+        .roles(ctx.cache())
+        .expect("Could not get member roles")
+        .contains(
+            ctx.guild()
+                .unwrap()
+                .role_by_name("Operator")
+                .expect("Could not get operator role"),
+        )
+    {
         has_op = true;
     }
     /* 209419219899514880 Jay
-       326839304829665282 Camden
-       675130001389125662 Trin */
-    if ctx.author().id == UserId::new(209419219899514880) || ctx.author().id == UserId::new(326839304829665282) || ctx.author().id == UserId::new(675130001389125662) {
+    326839304829665282 Camden
+    675130001389125662 Trin */
+    if ctx.author().id == UserId::new(209419219899514880)
+        || ctx.author().id == UserId::new(326839304829665282)
+        || ctx.author().id == UserId::new(675130001389125662)
+    {
         has_op = true;
     }
     if !has_op {
-        ctx.say("You do not have permission to run this command.").await?;
-    } else if user.add_role(ctx.http(), RoleId::new(718954921353019454)).await.is_ok() {
-        ctx.say("Successfully opped ".to_owned() + &user.user.name).await?;
+        ctx.say("You do not have permission to run this command.")
+            .await?;
+    } else if user
+        .add_role(ctx.http(), RoleId::new(718954921353019454))
+        .await
+        .is_ok()
+    {
+        ctx.say("Successfully opped ".to_owned() + &user.user.name)
+            .await?;
     } else {
         ctx.say("An error has occurred.").await?;
     }
@@ -42,19 +63,40 @@ async fn deop(
     #[description = "User"] user: poise::serenity_prelude::Member,
 ) -> Result<(), Error> {
     let mut has_op = false;
-    if ctx.author_member().await.ok_or("fuck you 1")?.roles(ctx.cache()).expect("fuck you 2").contains(ctx.guild().unwrap().role_by_name("Operator").expect("fuck you 3")) {
+    if ctx
+        .author_member()
+        .await
+        .ok_or("Could not get member")?
+        .roles(ctx.cache())
+        .expect("Could not get member roles")
+        .contains(
+            ctx.guild()
+                .unwrap()
+                .role_by_name("Operator")
+                .expect("Could not get operator role"),
+        )
+    {
         has_op = true;
     }
     /* 209419219899514880 Jay
-       326839304829665282 Camden
-       675130001389125662 Trin */
-    if ctx.author().id == UserId::new(209419219899514880) || ctx.author().id == UserId::new(326839304829665282) || ctx.author().id == UserId::new(675130001389125662) {
+    326839304829665282 Camden
+    675130001389125662 Trin */
+    if ctx.author().id == UserId::new(209419219899514880)
+        || ctx.author().id == UserId::new(326839304829665282)
+        || ctx.author().id == UserId::new(675130001389125662)
+    {
         has_op = true;
     }
     if !has_op {
-        ctx.say("You do not have permission to run this command.").await?;
-    } else if user.remove_role(ctx.http(), RoleId::new(718954921353019454)).await.is_ok() {
-        ctx.say("Successfully de-opped ".to_owned() + &user.user.name).await?;
+        ctx.say("You do not have permission to run this command.")
+            .await?;
+    } else if user
+        .remove_role(ctx.http(), RoleId::new(718954921353019454))
+        .await
+        .is_ok()
+    {
+        ctx.say("Successfully de-opped ".to_owned() + &user.user.name)
+            .await?;
     } else {
         ctx.say("An error has occurred.").await?;
     }
