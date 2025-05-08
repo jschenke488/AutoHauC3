@@ -4,6 +4,13 @@ use poise::serenity_prelude::{RoleId, UserId};
 use serenity::async_trait;
 use serenity::model::gateway::Ready;
 use serenity::prelude::{Context, EventHandler};
+use std::num::ParseIntError;
+
+// https://users.rust-lang.org/t/is-there-a-way-to-convert-a-string-to-u64-and-trim-any-floating-points/61574/3
+fn integer_part(value: &str) -> Result<u64, ParseIntError> {
+    let dot_pos = value.find(".").unwrap_or(value.len());
+    value[..dot_pos].parse()
+}
 
 struct Handler;
 
@@ -15,6 +22,7 @@ async fn op(
     ctx: poise::Context<'_, (), Error>,
     #[description = "User"] user: poise::serenity_prelude::Member,
 ) -> Result<(), Error> {
+    let operator_role_id: RoleId = RoleId::new(integer_part(&*std::env::var("OPERATOR_ROLE_ID").expect("missing OPERATOR_ROLE_ID environment variable. use a .env file or set this variable in a script.")).expect("OPERATOR_ROLE_ID is not a valid u64"));
     let mut has_op = false;
     if ctx
         .author_member()
@@ -46,7 +54,7 @@ async fn op(
         ctx.say("You do not have permission to run this command.")
             .await?;
     } else if user
-        .add_role(ctx.http(), RoleId::new(718954921353019454))
+        .add_role(ctx.http(), operator_role_id)
         .await
         .is_ok()
     {
@@ -64,6 +72,7 @@ async fn deop(
     ctx: poise::Context<'_, (), Error>,
     #[description = "User"] user: poise::serenity_prelude::Member,
 ) -> Result<(), Error> {
+    let operator_role_id: RoleId = RoleId::new(integer_part(&*std::env::var("OPERATOR_ROLE_ID").expect("missing OPERATOR_ROLE_ID environment variable. use a .env file or set this variable in a script.")).expect("OPERATOR_ROLE_ID is not a valid u64"));
     let mut has_op = false;
     if ctx
         .author_member()
@@ -95,7 +104,7 @@ async fn deop(
         ctx.say("You do not have permission to run this command.")
             .await?;
     } else if user
-        .remove_role(ctx.http(), RoleId::new(718954921353019454))
+        .remove_role(ctx.http(), operator_role_id)
         .await
         .is_ok()
     {
