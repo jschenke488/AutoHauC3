@@ -33,10 +33,12 @@ async fn op(
     }
     /* 209419219899514880 Jay
     326839304829665282 Camden
-    675130001389125662 Trin */
+    575337689574932482 Liz
+    740269241269485731 EXUBEN */
     if ctx.author().id == UserId::new(209419219899514880)
         || ctx.author().id == UserId::new(326839304829665282)
-        || ctx.author().id == UserId::new(675130001389125662)
+        || ctx.author().id == UserId::new(575337689574932482)
+        || ctx.author().id == UserId::new(740269241269485731)
     {
         has_op = true;
     }
@@ -80,10 +82,12 @@ async fn deop(
     }
     /* 209419219899514880 Jay
     326839304829665282 Camden
-    675130001389125662 Trin */
+    575337689574932482 Liz
+    740269241269485731 EXUBEN */
     if ctx.author().id == UserId::new(209419219899514880)
         || ctx.author().id == UserId::new(326839304829665282)
-        || ctx.author().id == UserId::new(675130001389125662)
+        || ctx.author().id == UserId::new(575337689574932482)
+        || ctx.author().id == UserId::new(740269241269485731)
     {
         has_op = true;
     }
