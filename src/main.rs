@@ -76,7 +76,7 @@ async fn has_permission(ctx: &poise::Context<'_, (), Error>) -> Result<bool, Err
         return Ok(true);
     }
 
-    let allowed_users_env = std::env::var("ALLOWED_USERS").expect("missing ALLOWED_USERS environment variable. use a .env file or set this variable in a script.");
+    let allowed_users_env = std::env::var("ALLOWED_USERS").unwrap_or_default();
     let allowed_users: Vec<UserId> = allowed_users_env
         .split(',')
         .filter_map(|id| id.trim().parse::<u64>().ok().map(UserId::new))
