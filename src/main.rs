@@ -23,43 +23,14 @@ async fn op(
     #[description = "User"] user: poise::serenity_prelude::Member,
 ) -> Result<(), Error> {
     let operator_role_id: RoleId = RoleId::new(integer_part(&*std::env::var("OPERATOR_ROLE_ID").expect("missing OPERATOR_ROLE_ID environment variable. use a .env file or set this variable in a script.")).expect("OPERATOR_ROLE_ID is not a valid u64"));
-    let mut has_op = false;
-    if ctx
-        .author_member()
-        .await
-        .ok_or("Could not get member")?
-        .roles(ctx.cache())
-        .expect("Could not get member roles")
-        .contains(
-            ctx.guild()
-                .unwrap()
-                .role_by_name("Operator")
-                .expect("Could not get operator role"),
-        )
-    {
-        has_op = true;
+
+    if !has_permission(&ctx).await? {
+        ctx.say("You do not have permission to run this command.").await?;
+        return Ok(());
     }
-    /* 209419219899514880 Jay
-    326839304829665282 Camden
-    575337689574932482 Liz
-    740269241269485731 EXUBEN */
-    if ctx.author().id == UserId::new(209419219899514880)
-        || ctx.author().id == UserId::new(326839304829665282)
-        || ctx.author().id == UserId::new(575337689574932482)
-        || ctx.author().id == UserId::new(740269241269485731)
-    {
-        has_op = true;
-    }
-    if !has_op {
-        ctx.say("You do not have permission to run this command.")
-            .await?;
-    } else if user
-        .add_role(ctx.http(), operator_role_id)
-        .await
-        .is_ok()
-    {
-        ctx.say("Successfully opped ".to_owned() + &user.user.name)
-            .await?;
+
+    if user.add_role(ctx.http(), operator_role_id).await.is_ok() {
+        ctx.say("Successfully opped ".to_owned() + &user.user.name).await?;
     } else {
         ctx.say("An error has occurred.").await?;
     }
@@ -73,7 +44,22 @@ async fn deop(
     #[description = "User"] user: poise::serenity_prelude::Member,
 ) -> Result<(), Error> {
     let operator_role_id: RoleId = RoleId::new(integer_part(&*std::env::var("OPERATOR_ROLE_ID").expect("missing OPERATOR_ROLE_ID environment variable. use a .env file or set this variable in a script.")).expect("OPERATOR_ROLE_ID is not a valid u64"));
-    let mut has_op = false;
+
+    if !has_permission(&ctx).await? {
+        ctx.say("You do not have permission to run this command.").await?;
+        return Ok(());
+    }
+
+    if user.remove_role(ctx.http(), operator_role_id).await.is_ok() {
+        ctx.say("Successfully de-opped ".to_owned() + &user.user.name).await?;
+    } else {
+        ctx.say("An error has occurred.").await?;
+    }
+    Ok(())
+}
+
+// Abstracted function to check permissions
+async fn has_permission(ctx: &poise::Context<'_, (), Error>) -> Result<bool, Error> {
     if ctx
         .author_member()
         .await
@@ -87,33 +73,20 @@ async fn deop(
                 .expect("Could not get operator role"),
         )
     {
-        has_op = true;
+        return Ok(true);
     }
-    /* 209419219899514880 Jay
-    326839304829665282 Camden
-    575337689574932482 Liz
-    740269241269485731 EXUBEN */
-    if ctx.author().id == UserId::new(209419219899514880)
-        || ctx.author().id == UserId::new(326839304829665282)
-        || ctx.author().id == UserId::new(575337689574932482)
-        || ctx.author().id == UserId::new(740269241269485731)
-    {
-        has_op = true;
+
+    let allowed_users_env = std::env::var("ALLOWED_USERS").expect("missing ALLOWED_USERS environment variable. use a .env file or set this variable in a script.");
+    let allowed_users: Vec<UserId> = allowed_users_env
+        .split(',')
+        .filter_map(|id| id.trim().parse::<u64>().ok().map(UserId::new))
+        .collect();
+
+    if allowed_users.contains(&ctx.author().id) {
+        return Ok(true);
     }
-    if !has_op {
-        ctx.say("You do not have permission to run this command.")
-            .await?;
-    } else if user
-        .remove_role(ctx.http(), operator_role_id)
-        .await
-        .is_ok()
-    {
-        ctx.say("Successfully de-opped ".to_owned() + &user.user.name)
-            .await?;
-    } else {
-        ctx.say("An error has occurred.").await?;
-    }
-    Ok(())
+
+    Ok(false)
 }
 
 #[async_trait]
@@ -130,6 +103,14 @@ async fn main() {
 
     let token = std::env::var("DISCORD_TOKEN").expect("missing DISCORD_TOKEN environment variable. use a .env file or set this variable in a script.");
     let intents = serenity::GatewayIntents::non_privileged();
+
+    // Print allowed users on startup
+    let allowed_users_env = std::env::var("ALLOWED_USERS").expect("missing ALLOWED_USERS environment variable. use a .env file or set this variable in a script.");
+    let allowed_users: Vec<UserId> = allowed_users_env
+        .split(',')
+        .filter_map(|id| id.trim().parse::<u64>().ok().map(UserId::new))
+        .collect();
+    println!("Allowed users: {:?}", allowed_users);
 
     let framework = poise::Framework::builder()
         .options(poise::FrameworkOptions {

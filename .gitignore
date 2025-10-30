@@ -160,3 +160,4 @@ Cargo.lock
 *.sync-exclude.lst
 
 *.env
+run.bat
