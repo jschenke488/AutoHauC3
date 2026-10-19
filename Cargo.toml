@@ -14,7 +14,7 @@ features = ["macros", "rt-multi-thread"]
 winres = "0.1.12"
 
 [dependencies]
-poise = "0.6.1"
+poise = "0.7.1"
 serenity = "0.12"
 dotenv = "0.15.0"
 log = "0.4.28"
